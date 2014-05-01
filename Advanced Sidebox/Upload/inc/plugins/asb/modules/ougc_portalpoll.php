@@ -51,7 +51,8 @@ function asb_ougc_portalpoll_info()
 		'description'	=> $info['description'],
 		'wrap_content'	=> false,
 		'xmlhttp'		=> true,
-		'version'		=> $info['version'],
+		'version'		=> '1',
+		'compatibility' => '2.1',
 		'settings' => array(
 			'ougc_portalpoll_random'	=> array(
 				'name'			=> 'ougc_portalpoll_random',
