@@ -2,7 +2,7 @@
 
 /***************************************************************************
  *
- *    OUGC Portal Poll plugin (/inc/languages/english/ougc_portalpoll.lang.php)
+ *    OUGC Portal Poll plugin (/inc/languages/english/admin/ougc_portalpoll.lang.php)
  *    Author: Omar Gonzalez
  *    Copyright: © 2012 Omar Gonzalez
  *
@@ -28,17 +28,16 @@
 
 // Plugin API
 $l['setting_group_ougc_portalpoll'] = 'OUGC Portal Poll';
+$l['setting_group_ougc_portalpoll_desc'] = 'Add a side-box poll in your portal.';
 
-// Portal Box
-$l['ougc_portalpoll_expire_message'] = '<br />This poll will end on {1}, {2}.';
-$l['ougc_portalpoll_edit'] = 'Edit poll';
-$l['ougc_portalpoll_already_voted'] = 'You have already voted on this poll.';
-$l['ougc_portalpoll_undo_vote'] = 'Undo vote';
-$l['ougc_portalpoll_poll_closed'] = 'This poll is closed.';
-$l['ougc_portalpoll_total_votes'] = '{1} votes';
-$l['ougc_portalpoll_you_voted'] = '* You voted for this item.';
-$l['ougc_portalpoll_total'] = 'Total';
-$l['ougc_portalpoll_poll'] = 'Poll:';
-$l['ougc_portalpoll_show_results'] = 'Show Results';
-$l['ougc_portalpoll_vote'] = 'Vote!';
-$l['ougc_portalpoll_view_thread'] = 'View Thread';
+// Settings
+$l['setting_ougc_portalpoll_random'] = 'Random Poll';
+$l['setting_ougc_portalpoll_random_desc'] = 'Do you want to pick a random poll?';
+$l['setting_ougc_portalpoll_forums'] = 'Random Forums';
+$l['setting_ougc_portalpoll_forums_desc'] = 'Forums to where the poll will be selected from.';
+$l['setting_ougc_portalpoll_pid'] = 'Poll PID';
+$l['setting_ougc_portalpoll_pid_desc'] = 'Please insert the Poll PID to show.';
+
+// PluginLibrary
+$l['ougc_portalpoll_pl_required'] = 'This plugin requires <a href="{1}">PluginLibrary</a> version {2} or later to be uploaded to your forum.';
+$l['ougc_portalpoll_pl_old'] = 'This plugin requires <a href="{1}">PluginLibrary</a> version {2} or later, whereas your current version is {3}.';

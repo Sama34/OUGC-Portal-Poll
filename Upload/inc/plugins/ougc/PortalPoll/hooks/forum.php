@@ -2,7 +2,7 @@
 
 /***************************************************************************
  *
- *    OUGC Portal Poll plugin (/inc/languages/english/ougc_portalpoll.lang.php)
+ *    OUGC Portal Poll plugin (/inc/plugins/ougc/PortalPoll/hooks/forum.php)
  *    Author: Omar Gonzalez
  *    Copyright: © 2012 Omar Gonzalez
  *
@@ -26,19 +26,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-// Plugin API
-$l['setting_group_ougc_portalpoll'] = 'OUGC Portal Poll';
+namespace ougc\PortalPoll\Hooks\Forum;
 
-// Portal Box
-$l['ougc_portalpoll_expire_message'] = '<br />This poll will end on {1}, {2}.';
-$l['ougc_portalpoll_edit'] = 'Edit poll';
-$l['ougc_portalpoll_already_voted'] = 'You have already voted on this poll.';
-$l['ougc_portalpoll_undo_vote'] = 'Undo vote';
-$l['ougc_portalpoll_poll_closed'] = 'This poll is closed.';
-$l['ougc_portalpoll_total_votes'] = '{1} votes';
-$l['ougc_portalpoll_you_voted'] = '* You voted for this item.';
-$l['ougc_portalpoll_total'] = 'Total';
-$l['ougc_portalpoll_poll'] = 'Poll:';
-$l['ougc_portalpoll_show_results'] = 'Show Results';
-$l['ougc_portalpoll_vote'] = 'Vote!';
-$l['ougc_portalpoll_view_thread'] = 'View Thread';
+use function ougc\PortalPoll\Core\buildPoll;
+
+function global_start()
+{
+    global $templatelist;
+
+    if (!isset($templatelist)) {
+        $templatelist = '';
+    } else {
+        $templatelist .= ',';
+    }
+
+    if (THIS_SCRIPT === 'portal.php') {
+        $templatelist .= 'ougcportalpoll, ougcportalpoll_resultbit, ougcportalpoll_option, ougc_portalpollresults';
+    }
+}
+
+function portal_end()
+{
+    buildPoll();
+}
