@@ -4,9 +4,9 @@
  *
  *    OUGC Portal Poll plugin (/inc/plugins/ougc_portalpoll.php)
  *    Author: Omar Gonzalez
- *    Copyright: � 2012-2014 Omar Gonzalez
+ *    Copyright: © 2012 Omar Gonzalez
  *
- *    Website: http://omarg.me
+ *    Website: https://ougc.network
  *
  *    Add a side-box poll in your portal.
  *
@@ -26,58 +26,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-// Die if IN_MYBB is not defined, for security reasons.
-defined('IN_MYBB') or die('This file cannot be accessed directly.');
+
+use function ougc\PortalPoll\Core\addHooks;
+use function ougc\PortalPoll\Core\buildPoll;
+use function ougc\PortalPoll\Core\loadLanguage;
+
+use const ougc\PortalPoll\Core\ROOT;
+
+defined('IN_MYBB') || die('Direct initialization of this file is disallowed.');
+
+define('ougc\PortalPoll\Core\ROOT', MYBB_ROOT . 'inc/plugins/ougc/PortalPoll');
+
+require_once ROOT . '/core.php';
+
+defined('PLUGINLIBRARY') or define('PLUGINLIBRARY', MYBB_ROOT . 'inc/plugins/pluginlibrary.php');
+
+if (defined('IN_ADMINCP')) {
+} else {
+    require_once ROOT . '/hooks/forum.php';
+
+    addHooks('ougc\PortalPoll\Hooks\Forum');
+}
+
+global $plugins;
 
 // Run the ACP hooks.
 if (defined('IN_ADMINCP')) {
-    $plugins->add_hook('admin_config_settings_start', 'ougc_portalpoll_lang_load');
-    $plugins->add_hook('admin_style_templates_set', 'ougc_portalpoll_lang_load');
-} elseif (THIS_SCRIPT == 'portal.php') {
-    global $plugins, $templatelist;
-
-    $plugins->add_hook('portal_end', 'ougc_build_poll');
-
-    if (!isset($templatelist)) {
-        $templatelist = '';
-    } else {
-        $templatelist .= ',';
-    }
-
-    $templatelist .= 'ougcportalpoll, ougcportalpoll_resultbit, ougcportalpoll_option, ougc_portalpollresults';
+    //$plugins->add_hook('admin_config_settings_start', 'ougc_portalpoll_lang_load');
+    //$plugins->add_hook('admin_style_templates_set', 'ougc_portalpoll_lang_load');
 }
-
-// PLUGINLIBRARY
-defined('PLUGINLIBRARY') or define('PLUGINLIBRARY', MYBB_ROOT . 'inc/plugins/pluginlibrary.php');
 
 // Plugin API
 function ougc_portalpoll_info()
 {
     global $lang;
-    ougc_portalpoll_lang_load();
 
-    return array(
+    loadLanguage();
+
+    return [
         'name' => 'OUGC Portal Poll',
         'description' => $lang->setting_group_ougc_portalpoll_desc,
-        'website' => 'http://omarg.me',
+        'website' => 'https://ougc.network',
         'author' => 'Omar G.',
-        'authorsite' => 'http://omarg.me',
-        'version' => '1.0',
-        'versioncode' => 1000,
-        'compatibility' => '16*',
-        'guid' => '',
-        'pl' => array(
-            'version' => 12,
-            'url' => 'http://mods.mybb.com/view/pluginlibrary'
-        )
-    );
+        'authorsite' => 'https://ougc.network',
+        'version' => '1.8.0',
+        'versioncode' => 1800,
+        'compatibility' => '18*',
+        'codename' => 'ougc_fileprofilefields',
+        'pl' => [
+            'version' => 13,
+            'url' => 'https://community.mybb.com/mods.php?action=view&pid=573'
+        ]
+    ];
 }
 
 // _activate() routine
 function ougc_portalpoll_activate()
 {
     global $PL, $lang, $cache;
-    ougc_portalpoll_lang_load();
+    loadLanguage();
     ougc_portalpoll_deactivate();
 
     // Add settings group
@@ -85,30 +92,30 @@ function ougc_portalpoll_activate()
         'ougc_portalpoll',
         $lang->setting_group_ougc_portalpoll,
         $lang->setting_group_ougc_portalpoll_desc,
-        array(
-            'random' => array(
+        [
+            'random' => [
                 'title' => $lang->setting_ougc_portalpoll_random,
                 'description' => $lang->setting_ougc_portalpoll_random_desc,
                 'optionscode' => 'yesno',
                 'value' => 0,
-            ),
-            'forums' => array(
+            ],
+            'forums' => [
                 'title' => $lang->setting_ougc_portalpoll_forums,
                 'description' => $lang->setting_ougc_portalpoll_forums_desc,
-                'optionscode' => 'text',
+                'optionscode' => 'forumselect',
                 'value' => '',
-            ),
-            'pid' => array(
+            ],
+            'pid' => [
                 'title' => $lang->setting_ougc_portalpoll_pid,
                 'description' => $lang->setting_ougc_portalpoll_pid_desc,
-                'optionscode' => 'text',
+                'optionscode' => 'numeric',
                 'value' => '',
-            )
-        )
+            ]
+        ]
     );
 
     // Add template group
-    $PL->templates('ougcportalpoll', '<lang:setting_group_ougc_portalpoll>', array(
+    $PL->templates('ougcportalpoll', 'OUGC Portal Poll', [
         '' => '<form action="{$mybb->settings[\'bburl\']}/polls.php" method="post">
 <input type="hidden" name="my_post_key" value="{$mybb->post_code}" />
 <input type="hidden" name="action" value="vote" />
@@ -157,7 +164,7 @@ function ougc_portalpoll_activate()
 <td class="{$trow}" width="67" align="center">{$votes}</td>
 <td class="{$trow}" width="67" align="center">{$percent}%</td>
 </tr>'
-    ));
+    ]);
 
     // Modify templates
     require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
@@ -170,7 +177,7 @@ function ougc_portalpoll_activate()
     // Insert/update version into cache
     $plugins = $cache->read('ougc_plugins');
     if (!$plugins) {
-        $plugins = array();
+        $plugins = [];
     }
 
     $info = ougc_portalpoll_info();
@@ -189,7 +196,7 @@ function ougc_portalpoll_activate()
             'templates',
             'title IN(\'' . implode(
                 '\', \'ougc_portalpoll',
-                array('', '_resultbit', '_option_multiple', '_option', '_results')
+                ['', '_resultbit', '_option_multiple', '_option', '_results']
             ) . '\') AND sid=\'-1\''
         );
 
@@ -244,19 +251,11 @@ function ougc_portalpoll_uninstall()
     }
 }
 
-// Loads language strings
-function ougc_portalpoll_lang_load()
-{
-    global $lang;
-
-    isset($lang->setting_group_ougc_portalpoll) or $lang->load('ougc_portalpoll');
-}
-
 // PluginLibrary dependency check & load
 function ougc_portalpoll_pl_check()
 {
     global $lang;
-    ougc_portalpoll_lang_load();
+    loadLanguage();
     $info = ougc_portalpoll_info();
 
     if (!file_exists(PLUGINLIBRARY)) {
@@ -288,166 +287,7 @@ function ougc_portalpoll_pl_check()
  * @param array Poll Options ( (bool) random, (string) forums, (int) pid, (bool) return string)
  * @return string Formatted poll
  **/
-function ougc_build_poll($options = array())
+function ougc_build_poll(array $options = [])
 {
-    global $mybb;
-
-    $options or $options = array(
-        'random' => (bool)$mybb->settings['ougc_portalpoll_random'],
-        'forums' => (string)$mybb->settings['ougc_portalpoll_forums'],
-        'pid' => (int)$mybb->settings['ougc_portalpoll_pid'],
-        'return' => false,
-    );
-
-    if (!$options['random'] && !$options['pid']) {
-        return false;
-    }
-
-    static $pollcache = array();
-
-    if (!isset($pollcache[$poll['pid']])) {
-        global $db;
-
-        // Build a where clause
-        $where = array();
-
-        if ($options['random']) {
-            $where[] = 'RAND()'; //DEBUG
-        } else {
-            $where[] = 'p.pid=\'' . $options['pid'] . '\'';
-        }
-
-        if ($unviewableforums = get_unviewable_forums(true)) {
-            $where[] = 't.fid NOT IN(' . $unviewableforums . ')';
-        }
-
-        if ($inactiveforums = get_inactive_forums()) {
-            $where[] = 't.fid NOT IN(' . $inactiveforums . ')';
-        }
-
-        $poll = $db->fetch_array(
-            $db->simple_select(
-                'polls p LEFT JOIN ' . TABLE_PREFIX . 'threads t ON (t.poll=p.pid)',
-                'p.*, t.closed AS threadclosed, t.fid',
-                implode(' AND ', $where),
-                array('limit' => 1)
-            )
-        );
-
-        if (!$poll['pid']) {
-            return false;
-        }
-
-        global $lang, $forum_cache, $parser, $templates, $theme;
-        ougc_portalpoll_lang_load();
-
-        $forum_cache or cache_forums();
-        $forum = $forum_cache[(int)$poll['fid']];
-
-        $poll['timeout'] = $poll['timeout'] * 60 * 60 * 24;
-        $expiretime = $poll['dateline'] + $poll['timeout'];
-
-        $expire_message = $poll['timeout'] ? $lang->sprintf(
-            $lang->ougc_portalpoll_expire_message,
-            my_date($mybb->settings['dateformat'], $expiretime),
-            my_date($mybb->settings['timeformat'], $expiretime)
-        ) : '';
-
-        $showresults = ($poll['closed'] || $poll['threadclosed'] || ($expiretime < TIME_NOW && $poll['timeout'] > 0)) ? true : false;
-
-        $mybb->user['uid'] = (int)$mybb->user['uid'];
-        $poll['pid'] = (int)$poll['pid'];
-
-        $votedfor = array();
-        $alreadyvoted = false;
-
-        if ($mybb->user['uid']) {
-            $query = $db->simple_select(
-                'pollvotes',
-                'voteoption',
-                'uid=\'' . $mybb->user['uid'] . '\' AND pid=\'' . $poll['pid'] . '\''
-            );
-            while ($voteoption = $db->fetch_field($query, 'voteoption')) {
-                $alreadyvoted = $votedfor[$voteoption] = true;
-            }
-        } elseif (isset($mybb->cookies['pollvotes'][$poll['pid']]) && $mybb->cookies['pollvotes'][$poll['pid']] !== '') {
-            $alreadyvoted = true;
-        }
-
-        $optionsarray = explode('||~|~||', $poll['options']);
-        $votesarray = explode('||~|~||', $poll['votes']);
-        $poll['question'] = htmlspecialchars_uni($poll['question']);
-        $polloptions = $edit_poll = '';
-        $totalvotes = 0;
-        $threadlink = get_thread_link($poll['tid']);
-
-        for ($i = 1; $i <= $poll['numoptions']; ++$i) {
-            $poll['totvotes'] = $poll['totvotes'] + $votesarray[$i - 1];
-        }
-
-        $totpercent = !empty($poll['totvotes']) ? '100%' : '0%';
-
-        for ($i = 1; $i <= $poll['numoptions']; ++$i) {
-            $option = $parser->parse_message($optionsarray[$i - 1], array(
-                'allow_html' => (bool)$forum['allowhtml'],
-                'allow_mycode' => (bool)$forum['allowmycode'],
-                'allow_smilies' => (bool)$forum['allowsmilies'],
-                'allow_imgcode' => (bool)$forum['allowimgcode'],
-                'allow_videocode' => (bool)$forum['allowvideocode'],
-                'filter_badwords' => 1
-            ));
-            $votes = (int)$votesarray[$i - 1];
-            $totalvotes += $votes;
-            $number = $i;
-
-            #$trow = alt_trow();
-            $trow = isset($votedfor[$number]) ? 'trow2' : 'trow1';
-            $votestar = isset($votedfor[$number]) ? '*' : '';
-
-            if ($alreadyvoted || $showresults) {
-                $percent = !$votes ? 0 : number_format($votes / $poll['totvotes'] * 100, 2);
-                $imagewidth = round(($percent / 3) * 5);
-                $imagerowwidth = $imagewidth + 10;
-                eval('$polloptions .= "' . $templates->get('ougcportalpoll_resultbit') . '";');
-            } else {
-                $type = $poll['multiple'] ? 'checkbox' : 'radio';
-                $name = $poll['multiple'] ? '[' . (int)$number . ']' : '';
-                $value = $poll['multiple'] ? 1 : (int)$number;
-
-                eval('$polloptions .= "' . $templates->get('ougcportalpoll_option') . '";');
-            }
-        }
-
-        $edit_poll = is_moderator(
-            $poll['fid'],
-            'caneditposts'
-        ) ? ' | <a href="' . $mybb->settings['bburl'] . '/polls.php?action=editpoll&amp;pid={' . $poll['pid'] . '}">' . $lang->ougc_portalpoll_edit . '</a>' : '';
-
-        $tmpl = '';
-        if ($alreadyvoted || $showresults) {
-            $pollstatus = $alreadyvoted ? $lang->ougc_portalpoll_already_voted : $lang->ougc_portalpoll_poll_closed;
-            if ($alreadyvoted && $mybb->usergroup['canundovotes']) {
-                $pollstatus .= ' [<a href="' . $mybb->settings['bburl'] . '/polls.php?action=do_undovote&amp;pid=' . $poll['pid'] . '&amp;my_post_key=' . $mybb->post_code . '">' . $lang->ougc_portalpoll_undo_vote . '</a>]';
-            }
-
-            $lang->ougc_portalpoll_total_votes = $lang->sprintf($lang->ougc_portalpoll_total_votes, $totalvotes);
-            $tmpl = '_results';
-        } else {
-            $publicnote = $poll['public'] ? $lang->public_note : '&nbsp;';
-        }
-
-        eval('$pollcache[' . $poll['pid'] . '] = "' . $templates->get('ougcportalpoll' . $tmpl) . '";');
-
-        global $plugins;
-
-        $plugins->run_hooks('showthread_poll_results');
-    }
-
-    if ($options['return']) {
-        return $pollcache[$poll['pid']];
-    }
-
-    global $ougc_portalpoll;
-
-    $ougc_portalpoll = (string)$pollcache[$poll['pid']];
+    buildPoll($options);
 }

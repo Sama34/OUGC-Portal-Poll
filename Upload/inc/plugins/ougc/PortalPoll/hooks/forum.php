@@ -2,7 +2,7 @@
 
 /***************************************************************************
  *
- *    OUGC Portal Poll plugin (/inc/languages/english/admin/ougc_portalpoll.lang.php)
+ *    OUGC Portal Poll plugin (/inc/plugins/ougc/PortalPoll/hooks/forum.php)
  *    Author: Omar Gonzalez
  *    Copyright: © 2012 Omar Gonzalez
  *
@@ -26,18 +26,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-// Plugin API
-$l['setting_group_ougc_portalpoll'] = 'OUGC Portal Poll';
-$l['setting_group_ougc_portalpoll_desc'] = 'Add a side-box poll in your portal.';
+namespace ougc\PortalPoll\Hooks\Forum;
 
-// Settings
-$l['setting_ougc_portalpoll_random'] = 'Random Poll';
-$l['setting_ougc_portalpoll_random_desc'] = 'Do you want to pick a random poll?';
-$l['setting_ougc_portalpoll_forums'] = 'Random Forums';
-$l['setting_ougc_portalpoll_forums_desc'] = 'Forums to where the poll will be selected from.';
-$l['setting_ougc_portalpoll_pid'] = 'Poll PID';
-$l['setting_ougc_portalpoll_pid_desc'] = 'Please insert the Poll PID to show.';
+use function ougc\PortalPoll\Core\buildPoll;
 
-// PluginLibrary
-$l['ougc_portalpoll_pl_required'] = 'This plugin requires <a href="{1}">PluginLibrary</a> version {2} or later to be uploaded to your forum.';
-$l['ougc_portalpoll_pl_old'] = 'This plugin requires <a href="{1}">PluginLibrary</a> version {2} or later, whereas your current version is {3}.';
+function global_start()
+{
+    global $templatelist;
+
+    if (!isset($templatelist)) {
+        $templatelist = '';
+    } else {
+        $templatelist .= ',';
+    }
+
+    if (THIS_SCRIPT === 'portal.php') {
+        $templatelist .= 'ougcportalpoll, ougcportalpoll_resultbit, ougcportalpoll_option, ougc_portalpollresults';
+    }
+}
+
+function portal_end()
+{
+    buildPoll();
+}

@@ -4,9 +4,9 @@
  *
  *    OUGC Portal Poll plugin (/inc/languages/english/ougc_portalpoll.lang.php)
  *    Author: Omar Gonzalez
- *    Copyright: © 2012-2014 Omar Gonzalez
+ *    Copyright: © 2012 Omar Gonzalez
  *
- *    Website: http://omarg.me
+ *    Website: https://ougc.network
  *
  *    Add a side-box poll in your portal.
  *
