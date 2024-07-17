@@ -41,7 +41,7 @@ function global_start()
     }
 
     if (THIS_SCRIPT === 'portal.php') {
-        $templatelist .= 'ougcportalpoll, ougcportalpoll_resultbit, ougcportalpoll_option, ougc_portalpollresults';
+        $templatelist .= 'ougcportalpoll, ougcportalpoll_resultbit, ougcportalpoll_option, ougc_portalpollresults, ougcportalpoll_proPortal, ougcportalpoll_proPortalWrapper, ougcportalpoll_proPortalWrapperResponsive';
     }
 }
 

@@ -26,7 +26,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ****************************************************************************/
 
-
 use function ougc\PortalPoll\Core\addHooks;
 use function ougc\PortalPoll\Core\buildPoll;
 use function ougc\PortalPoll\Core\loadLanguage;
@@ -35,7 +34,9 @@ use const ougc\PortalPoll\Core\ROOT;
 
 defined('IN_MYBB') || die('Direct initialization of this file is disallowed.');
 
-define('ougc\PortalPoll\Core\ROOT', MYBB_ROOT . 'inc/plugins/ougc/PortalPoll');
+if (!defined('ougc\PortalPoll\Core\ROOT')) {
+    define('ougc\PortalPoll\Core\ROOT', MYBB_ROOT . 'inc/plugins/ougc/PortalPoll');
+}
 
 require_once ROOT . '/core.php';
 
@@ -163,7 +164,14 @@ function ougc_portalpoll_activate()
 <td class="{$trow}"><img src="{$theme[\'imgdir\']}/pollbar-s.gif" alt="" /><img src="{$theme[\'imgdir\']}/pollbar.gif" width="{$imagewidth}" height="10" alt="{$percent}%" title="{$percent}%" /><img src="{$theme[\'imgdir\']}/pollbar-e.gif" alt="" /></td>
 <td class="{$trow}" width="67" align="center">{$votes}</td>
 <td class="{$trow}" width="67" align="center">{$percent}%</td>
-</tr>'
+</tr>',
+        'proPortal' => '{$pollBox}',
+        'proPortalWrapperResponsive' => '<div class="col-lg-12 col-md-12 col-xs-12 col-sm-12" style="padding: 0; padding-bottom:{$proportal->settings[\'horizontalspace\']};">
+	{$ougcPollBox}
+</div>',
+        'proPortalWrapper' => '<div style="padding: 0; padding-bottom:{$proportal->settings[\'horizontalspace\']};">
+	{$ougcPollBox}
+</div>'
     ]);
 
     // Modify templates

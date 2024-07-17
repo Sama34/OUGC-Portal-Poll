@@ -2,17 +2,16 @@
 
 /***************************************************************************
  *
- *    OUGC Portal Poll - ASB plugin
+ *    OUGC Portal Poll plugin (/inc/plugins/asb/modules/ougc_portalpoll.php)
  *    Author: Omar Gonzalez
  *    Copyright: © 2014 Omar Gonzalez
  *
  *    Website: https://ougc.network
  *
- *    Shows an poll in portal.
+ *    Add a side-box poll in your portal.
  *
- ***************************************************************************/
-
-/****************************************************************************
+ ***************************************************************************
+ ****************************************************************************
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +29,15 @@
 // Die if IN_ASB is not defined, for security reasons.
 use function ougc\PortalPoll\Core\buildPoll;
 
+use const ougc\PortalPoll\Core\ROOT;
+
 defined('IN_ASB') or die('Direct initialization of this file is not allowed.');
+
+if (!defined('ougc\PortalPoll\Core\ROOT')) {
+    define('ougc\PortalPoll\Core\ROOT', MYBB_ROOT . 'inc/plugins/ougc/PortalPoll');
+}
+
+require_once ROOT . '/core.php';
 
 // Plugin API
 function asb_ougc_portalpoll_info()
